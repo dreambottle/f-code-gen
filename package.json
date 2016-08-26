@@ -1,0 +1,15 @@
+{
+  "name": "fractal-code-generator",
+  "version": "0.0.1",
+  "description": "Code generator for Fractal",
+  "main": "src/codegen.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nico Dzhus",
+  "dependencies": {
+    "lodash": "^4.15.0",
+    "sprintf-js": "^1.0.3"
+  },
+  "license": "ISC"
+}
