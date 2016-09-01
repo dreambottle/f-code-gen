@@ -22,9 +22,10 @@
 // 	// }
 // }
 var Data = {}
-Data.TYPE_INT = "int"
-Data.TYPE_CHAR = "char"
-Data.TYPE_CHARPTR = "charptr"
-// Data.TYPE_BYTE = "byte"
+Data.TYPE_INT = "i"
+Data.TYPE_CHAR = "c"
+Data.TYPE_CHARPTR = "s"
+Data.TYPE_BYTE = "b"
+Data.TYPE_BYTEARRAY = "B"
 
 module.exports = Data

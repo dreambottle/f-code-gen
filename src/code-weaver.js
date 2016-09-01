@@ -45,6 +45,8 @@ var modulesDictionaryArduino101 = {
 }
 
 var modulesDictionaryArduinoUno = {
+    "MqttUartTransport"     : "./generators/core-arduino/serial-mqtt-transport",
+
     // Inputs
     "ArduinoInput"          : "./generators/core-arduino/input",
     "Input"                 : "./generators/core-arduino/input",
