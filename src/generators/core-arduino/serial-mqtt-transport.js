@@ -64,7 +64,7 @@ inline void setDefaultSerialTimeout() {
 }
 
 inline void doSendMessage(char* topic, byte* data, size_t dataSize) {
-  writeMessage('!', topic, data, dataSize);
+  writeMessage('$', topic, data, dataSize);
 }
 
 inline void subscribe(char* topic) {
