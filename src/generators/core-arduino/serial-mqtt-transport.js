@@ -39,7 +39,7 @@ int buf2size(byte size[2]) {
   return (((int)size[0])<<8) & size[1];
 }
 
-void size2buf(int size, byte (&buf)[2]) {
+void size2buf(int size, byte* buf) {
   buf[0] = (byte) ((size>>8) & 0xFF);
   buf[1] = (byte) (size & 0xFF);
 }
@@ -49,12 +49,12 @@ void onSerialMessageRead(char* topic, byte* data, size_t dataSize) {
     // Do onInput1
 `,
     // TODO pass data as arg
-    weaver.generateCall(id, 'onInput1'),
+    weaver.triggerLink(id, 'onInput1'),
 `
   } else if (0 == strcmp(topic, input2Topic)) {
     // Do onInput2
 `,
-    weaver.generateCall(id, 'onInput2'),
+    weaver.triggerLink(id, 'onInput2'),
 `
   }
 }
@@ -71,12 +71,14 @@ inline void subscribe(char* topic) {
   writeMessage('#', topic, NULL, 0);
 }
 
+
 void writeMessage(char messageType, char* topic, byte* data, size_t dataSize) {
   int len = strlen(topic);
-  byte sizeBuf[2];
-  size2buf(len + dataSize + 1, sizeBuf);
-  Serial.write(sizeBuf, 2);
-  Serial.write(messageType);
+  byte headerBuf[3];
+  size2buf(len + dataSize + 1, headerBuf);
+  headerBuf[2] = messageType;
+  Serial.write(headerBuf, 3);
+//  Serial.write(messageType);
   Serial.write(topic, len);
   if (dataSize != 0 && data != NULL) {
     Serial.write(':');
@@ -85,10 +87,15 @@ void writeMessage(char messageType, char* topic, byte* data, size_t dataSize) {
 
   // block until 000 (ok) response.
   Serial.setTimeout(300);
+  len = Serial.readBytes(headerBuf, 3);
+  if (len != 3) {
+      Serial.print("---Error: OK response timed out.");
+      Serial.println(len);
+  }
   for (int i = 0; i < 3; ++i) {
-    if (Serial.read() != 0) {
-      // TODO handle error
-      break;
+    if (headerBuf[i] != 0) {
+      Serial.print("---Error: Nonzero byte in OK response.");
+      Serial.println(headerBuf[i]);
     }
   }
   setDefaultSerialTimeout();
@@ -140,6 +147,13 @@ void tryReadSerialMessage() {
     }
   }
 }
+
+void clearSerialBuffer() {
+  int size = Serial.available();
+  for (int i; i < size; i++) {
+    Serial.read();
+  }
+}
 #endif //SERIAL_DECLARATIONS_ONCE
 `
     ])
@@ -172,6 +186,7 @@ void tryReadSerialMessage() {
 #define SERIAL_SETUP_ONCE
   Serial.begin(SERIAL_BAUD);
   while (!Serial) {}
+  clearSerialBuffer();
   // HARDCODE
   subscribe(input1Topic);
   subscribe(input2Topic);
